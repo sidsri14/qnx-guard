@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>QNX Sentinel Presentation</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 1920px;
+      height: 1080px;
+      background: #090d13;
+      color: #e6edf3;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 80px 100px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #21262d;
+      padding-bottom: 24px;
+    }
+    .brand { font-size: 32px; font-weight: 800; color: #58a6ff; letter-spacing: 1px; }
+    .badge { background: #238636; color: #fff; padding: 6px 16px; border-radius: 20px; font-size: 18px; font-weight: 600; }
+    .content { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+    h1 { font-size: 56px; font-weight: 800; margin-bottom: 24px; line-height: 1.2; color: #ffffff; }
+    h2 { font-size: 36px; font-weight: 700; color: #58a6ff; margin-bottom: 30px; }
+    p.lead { font-size: 26px; color: #8b949e; line-height: 1.6; max-width: 1500px; margin-bottom: 40px; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 20px; }
+    .card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 30px; }
+    .card h3 { font-size: 24px; color: #79c0ff; margin-bottom: 14px; }
+    .card p { font-size: 18px; color: #c9d1d9; line-height: 1.5; }
+    .card .stat { font-size: 36px; font-weight: 800; color: #3fb950; margin-top: 15px; }
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 2px solid #21262d;
+      padding-top: 24px;
+      font-size: 20px;
+      color: #8b949e;
+    }
+    .tag { background: #1f6feb22; color: #58a6ff; border: 1px solid #1f6feb; padding: 4px 12px; border-radius: 6px; font-family: monospace; font-size: 16px; }
+    pre { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 24px; font-size: 20px; color: #58a6ff; line-height: 1.6; font-family: "Cascadia Code", Consolas, monospace; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="brand">QNX SENTINEL (qnx-guard)</div>
+    <div class="badge">QNX Global Hackathon 2026</div>
+  </div>
+
+  <div class="content" id="slide-container">
+    <!-- Populated by JS based on URL param ?s=1..6 -->
+  </div>
+
+  <div class="footer">
+    <div>Developer Tooling &amp; Host Tools Track</div>
+    <div id="slide-num">Slide 1 of 5</div>
+    <div>github.com/sidsri14/qnx-guard</div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const s = parseInt(params.get('s') || '1');
+    const container = document.getElementById('slide-container');
+    const slideNum = document.getElementById('slide-num');
+    slideNum.innerText = `Slide ${s} of 5`;
+
+    if (s === 1) {
+      container.innerHTML = `
+        <h1>QNX Sentinel (<code>qnx-guard</code>)</h1>
+        <h2>Static Real-Time Safety &amp; IFS Buildfile Security Validator</h2>
+        <p class="lead">A zero-dependency host linter engineered for QNX Software Development Platform (SDP) 8.0, preventing microkernel IPC deadlocks, pulse code collisions, priority inversion, and unhardened automotive buildfiles.</p>
+        <div class="grid">
+          <div class="card">
+            <h3>Neutrino IPC Real-Time Safety</h3>
+            <p>Analyzes synchronous <code>MsgSend</code> blocking chains, pulse ranges, and channel scheduling flags.</p>
+            <div class="stat">6 Rules</div>
+          </div>
+          <div class="card">
+            <h3>IFS Bootfile Auditor</h3>
+            <p>Validates <code>mkifs</code> buildfiles for world-writable permissions, missing dumper daemons, and secrets.</p>
+            <div class="stat">5 Rules</div>
+          </div>
+          <div class="card">
+            <h3>Enterprise Toolchain</h3>
+            <p>Checks <code>qcc</code>/<code>q++</code> stack canaries, FORTIFY_SOURCE, SARIF export, and GitHub Actions CI.</p>
+            <div class="stat">100% Green</div>
+          </div>
+        </div>
+      `;
+    } else if (s === 2) {
+      container.innerHTML = `
+        <h2>The Real-Time Embedded Challenge</h2>
+        <p class="lead">QNX 8.0 microkernel systems operate in high-assurance environments: automotive ECUs, medical robots, and aerospace controllers. Standard linters miss QNX-specific architectural hazards:</p>
+        <div class="grid">
+          <div class="card">
+            <h3>Synchronous Deadlocks</h3>
+            <p><code>MsgSend</code> blocks until the target replies. Unbounded blocking without <code>TimerTimeout</code> halts safety threads indefinitely.</p>
+          </div>
+          <div class="card">
+            <h3>System Pulse Collisions</h3>
+            <p>Negative pulse codes collide with kernel notifications (e.g. <code>_PULSE_CODE_DISCONNECT</code>, <code>_PULSE_CODE_UNBLOCK</code>).</p>
+          </div>
+          <div class="card">
+            <h3>Insecure IFS Permissions</h3>
+            <p>Buildfiles deploying with <code>[perms=0777]</code> allow arbitrary code modification on boot images.</p>
+          </div>
+        </div>
+      `;
+    } else if (s === 3) {
+      container.innerHTML = `
+        <h2>Automated Architecture &amp; Rule Engine</h2>
+        <p class="lead">Zero external dependencies. Runs directly on developer workstations, headless build servers, and CI/CD pipelines.</p>
+        <div class="grid">
+          <div class="card">
+            <h3>Real-Time Rules (QNX001-QNX006)</h3>
+            <p>• Unbounded MsgSend deadlock<br>• Kernel pulse collision<br>• Priority inversion in ChannelCreate<br>• Resource manager missing reply<br>• Root privilege retention<br>• Unchecked MsgReceive buffer</p>
+          </div>
+          <div class="card">
+            <h3>IFS Rules (QNX101-QNX105)</h3>
+            <p>• World-writable file permissions<br>• Missing dumper crash daemon<br>• Missing hardware MMU protection<br>• Insecure LD_LIBRARY_PATH<br>• Hardcoded credentials &amp; tokens</p>
+          </div>
+          <div class="card">
+            <h3>Multi-Format Reporting</h3>
+            <p>• ANSI colored terminal diagnostics<br>• Machine-readable JSON<br>• Standard SARIF 2.1.0 for GitHub<br>• Visual HTML interactive dashboard</p>
+          </div>
+        </div>
+      `;
+    } else if (s === 4) {
+      container.innerHTML = `
+        <h2>Real Scan Demonstration Output</h2>
+        <p class="lead">Scanning realistic QNX service and IFS buildfile (<code>examples/sample_qnx_project</code>) in sub-second execution:</p>
+        <pre>
+$ python -m qnx_guard.cli examples/sample_qnx_project
+========================================================================
+  QNX Sentinel (qnx-guard) v0.1.0 — Real-Time Systems Audit
+========================================================================
+[HIGH]   QNX002: System-Pulse-Code-Collision (vulnerable_service.c:9)
+[MEDIUM] QNX003: Channel-Priority-Inversion-Risk (vulnerable_service.c:22)
+[HIGH]   QNX101: World-Writable-IFS-Permissions (vulnerable_system.bld:22)
+[HIGH]   QNX105: Hardcoded-Credentials-In-Buildfile (vulnerable_system.bld:13)
+[MEDIUM] QNX201: Missing-QCC-Security-Hardening (Makefile:2)
+------------------------------------------------------------------------
+Scan Summary: 7 Findings (3 High, 2 Medium, 2 Low) | 18/18 Unit Tests PASS
+        </pre>
+      `;
+    } else if (s === 5) {
+      container.innerHTML = `
+        <h2>Production Integration &amp; Availability</h2>
+        <p class="lead">Ready for mission-critical software supply chains, automotive Tier-1s, and robotics teams.</p>
+        <div class="grid">
+          <div class="card">
+            <h3>GitHub Action Integration</h3>
+            <p><code>uses: sidsri14/qnx-guard@v0.1.0</code><br>Plug-and-play automated security gating on every pull request.</p>
+          </div>
+          <div class="card">
+            <h3>Live Interactive Dashboard</h3>
+            <p>Public interactive scorecard deployed on GitHub Pages:<br><strong style="color:#58a6ff;">sidsri14.github.io/qnx-guard/</strong></p>
+          </div>
+          <div class="card">
+            <h3>Open Source &amp; Verified</h3>
+            <p>18/18 unit tests green.<br>Apache-2.0 License.<br>Targeting QNX SDP 8.0 Everywhere.</p>
+          </div>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>
