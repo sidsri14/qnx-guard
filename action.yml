@@ -1,0 +1,29 @@
+name: 'QNX Sentinel Linter'
+description: 'Static real-time safety and IFS buildfile security validator for QNX 8.0 projects'
+author: 'Siddharth Srivastava'
+branding:
+  icon: 'shield'
+  color: 'blue'
+
+inputs:
+  path:
+    description: 'Path to scan'
+    required: false
+    default: '.'
+  fail-on-high:
+    description: 'Fail build if high severity findings are present'
+    required: false
+    default: 'false'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Run QNX Guard
+      shell: bash
+      run: |
+        python -m qnx_guard.cli ${{ inputs.path }} ${{ inputs.fail-on-high == 'true' && '--fail-on-high' || '' }}

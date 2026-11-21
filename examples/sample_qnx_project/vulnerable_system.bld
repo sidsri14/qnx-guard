@@ -1,0 +1,22 @@
+# Sample QNX 8.0 IFS Buildfile with security flaws
+[image=0x100000]
+[virtual=x86_64,bios +compress] .bootstrap = {
+    startup-x86_64 -v
+    PATH=/proc/boot procnto-smp-instr
+}
+
+[+script] .script = {
+    # QNX104: Insecure library search path
+    LD_LIBRARY_PATH=/tmp:/proc/boot
+
+    # QNX105: Hardcoded credentials in buildfile script
+    DIAG_API_KEY=SECRET_TELEMETRY_TOKEN_991823
+
+    # QNX102: Missing dumper daemon in startup script
+    devc-ser8250 &
+    reopen /dev/ser1
+    [+session] ksh &
+}
+
+# QNX101: Insecure world-writable permission
+[perms=0777] /bin/telemetry_daemon = /target/telemetry_daemon
