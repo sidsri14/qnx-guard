@@ -62,6 +62,22 @@ NEUTRINO_RULES = [
         category="Neutrino IPC Safety",
         remediation="Inspect message header struct and handle pulses (rcvid == 0) separately from standard messages (rcvid > 0).",
     ),
+    Rule(
+        rule_id="QNX007",
+        name="Insecure-Name-Attach",
+        severity=Severity.MEDIUM,
+        description="name_attach called with flags=0 without permission validation or path prefix control.",
+        category="Neutrino IPC Safety",
+        remediation="Provide explicit flags to name_attach() and restrict namespace permissions to prevent channel spoofing.",
+    ),
+    Rule(
+        rule_id="QNX008",
+        name="Unsafe-Interrupt-Attach",
+        severity=Severity.HIGH,
+        description="InterruptAttach or InterruptAttachEvent called without acquiring I/O privileges via ThreadCtl(_NTO_TCTL_IO, 0).",
+        category="Hardware & Interrupts",
+        remediation="Acquire I/O privilege using ThreadCtl(_NTO_TCTL_IO, 0) before attaching hardware interrupt handlers.",
+    ),
 ]
 
 
@@ -179,6 +195,40 @@ def check_neutrino_rules(content: str, file_path: str) -> List[Finding]:
                         matched_text=line.strip()[:100],
                         message="MsgReceive() invoked without explicit check for pulse events (rcvid == 0).",
                         remediation="Always test if rcvid == 0 to handle QNX kernel pulses separately from synchronous messages.",
+                    )
+                )
+
+        # QNX007: name_attach with flags=0
+        if re.search(r"\bname_attach\s*\(\s*[^,]+,\s*[^,]+,\s*0\s*\)", line):
+            findings.append(
+                Finding(
+                    rule_id="QNX007",
+                    rule_name="Insecure-Name-Attach",
+                    severity=Severity.MEDIUM,
+                    category="Neutrino IPC Safety",
+                    file_path=file_path,
+                    line_number=i,
+                    matched_text=line.strip()[:100],
+                    message="name_attach() called with flags=0. Channel lacks explicit namespace permissions.",
+                    remediation="Specify explicit flags or permissions in name_attach() to prevent unprivileged path spoofing.",
+                )
+            )
+
+        # QNX008: InterruptAttach without ThreadCtl(_NTO_TCTL_IO, 0)
+        if re.search(r"\bInterruptAttach(?:Event)?\s*\(", line):
+            has_tctl_io = any("ThreadCtl" in l and "_NTO_TCTL_IO" in l for l in lines)
+            if not has_tctl_io:
+                findings.append(
+                    Finding(
+                        rule_id="QNX008",
+                        rule_name="Unsafe-Interrupt-Attach",
+                        severity=Severity.HIGH,
+                        category="Hardware & Interrupts",
+                        file_path=file_path,
+                        line_number=i,
+                        matched_text=line.strip()[:100],
+                        message="InterruptAttach() called without verifying ThreadCtl(_NTO_TCTL_IO, 0) privilege.",
+                        remediation="Call ThreadCtl(_NTO_TCTL_IO, 0) to secure I/O privilege before attaching hardware interrupt handlers.",
                     )
                 )
 

@@ -53,6 +53,14 @@ BUILDFILE_RULES = [
         category="Secrets Management",
         remediation="Remove hardcoded credentials from buildfile. Pass secrets at runtime via secure keystore or mount point.",
     ),
+    Rule(
+        rule_id="QNX106",
+        name="Missing-Secpol-Enforcement",
+        severity=Severity.HIGH,
+        description="Boot script does not start secpol (security policy manager) for QNX 8.0 mandatory access control (MAC).",
+        category="IFS Image Security",
+        remediation="Add 'secpol &' or 'secpol -d &' into [+script] to enforce QNX 8.0 sandboxing and process isolation policies.",
+    ),
 ]
 
 
@@ -61,6 +69,7 @@ def check_buildfile_rules(content: str, file_path: str) -> List[Finding]:
     lines = content.splitlines()
 
     has_dumper = any(re.search(r"\bdumper\b", line) for line in lines)
+    has_secpol = any(re.search(r"\bsecpol\b", line) for line in lines)
     is_buildfile = file_path.endswith((".bld", ".build")) or "[+script]" in content or "[image=" in content
 
     if not is_buildfile:
@@ -79,6 +88,22 @@ def check_buildfile_rules(content: str, file_path: str) -> List[Finding]:
                 matched_text="[+script] section missing dumper daemon",
                 message="QNX buildfile does not launch 'dumper' daemon in boot script.",
                 remediation="Add 'dumper -d /var/dumps &' into [+script] to capture crash core dumps in real time.",
+            )
+        )
+
+    # QNX106: Missing secpol enforcement in QNX 8.0 buildfile
+    if not has_secpol and "[+script]" in content and "qnx8" in content.lower():
+        findings.append(
+            Finding(
+                rule_id="QNX106",
+                rule_name="Missing-Secpol-Enforcement",
+                severity=Severity.HIGH,
+                category="IFS Image Security",
+                file_path=file_path,
+                line_number=1,
+                matched_text="[+script] section missing secpol daemon",
+                message="QNX 8.0 buildfile [+script] does not launch 'secpol' security policy manager daemon.",
+                remediation="Add 'secpol &' into [+script] to enforce Mandatory Access Control policies in QNX 8.0.",
             )
         )
 

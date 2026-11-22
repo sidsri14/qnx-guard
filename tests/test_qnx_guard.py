@@ -79,6 +79,22 @@ class TestNeutrinoRules(unittest.TestCase):
         rule_ids = [f.rule_id for f in findings]
         self.assertIn("QNX006", rule_ids)
 
+    def test_qnx007_insecure_name_attach(self):
+        code = """
+        name_attach_t *attach = name_attach(NULL, "my_service", 0);
+        """
+        findings = check_neutrino_rules(code, "service.c")
+        rule_ids = [f.rule_id for f in findings]
+        self.assertIn("QNX007", rule_ids)
+
+    def test_qnx008_unsafe_interrupt_attach(self):
+        code = """
+        int iid = InterruptAttach(10, isr_handler, NULL, 0, 0);
+        """
+        findings = check_neutrino_rules(code, "driver.c")
+        rule_ids = [f.rule_id for f in findings]
+        self.assertIn("QNX008", rule_ids)
+
 
 class TestBuildfileRules(unittest.TestCase):
     def test_qnx101_world_writable_permissions(self):
@@ -124,6 +140,19 @@ class TestBuildfileRules(unittest.TestCase):
         findings = check_buildfile_rules(bld, "image.bld")
         rule_ids = [f.rule_id for f in findings]
         self.assertIn("QNX105", rule_ids)
+
+    def test_qnx106_missing_secpol_enforcement(self):
+        bld = """
+        [image=0x100000]
+        # QNX8 target buildfile
+        [+script] {
+            dumper -d /var/dumps &
+            procmgr-slink &
+        }
+        """
+        findings = check_buildfile_rules(bld, "qnx8_image.bld")
+        rule_ids = [f.rule_id for f in findings]
+        self.assertIn("QNX106", rule_ids)
 
 
 class TestToolchainRules(unittest.TestCase):
