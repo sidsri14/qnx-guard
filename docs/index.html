@@ -48,7 +48,7 @@
         <tr class="medium">
           <td><strong>QNX201</strong></td>
           <td><span class="badge medium">MEDIUM</span></td>
-          <td><code>Makefile:2</code></td>
+          <td><code>sample_qnx_project\Makefile:2</code></td>
           <td>qcc/q++ invocation detected without stack protector (-fstack-protector-strong) hardening.</td>
           <td><pre>CC = qcc</pre></td>
           <td><em>Pass -fstack-protector-strong and -D_FORTIFY_SOURCE=2 to compiler flags.</em></td>
@@ -57,7 +57,7 @@
         <tr class="low">
           <td><strong>QNX202</strong></td>
           <td><span class="badge low">LOW</span></td>
-          <td><code>Makefile:2</code></td>
+          <td><code>sample_qnx_project\Makefile:2</code></td>
           <td>qcc invocation lacks explicit target architecture variant flag.</td>
           <td><pre>CC = qcc</pre></td>
           <td><em>Specify target architecture with -Vgcc_ntox86_64 (x86_64) or -Vgcc_ntoaarch64le (ARM64).</em></td>
@@ -66,7 +66,7 @@
         <tr class="high">
           <td><strong>QNX002</strong></td>
           <td><span class="badge high">HIGH</span></td>
-          <td><code>vulnerable_service.c:9</code></td>
+          <td><code>sample_qnx_project\vulnerable_service.c:9</code></td>
           <td>Negative pulse code '-1' conflicts with QNX kernel-reserved pulse codes.</td>
           <td><pre>#define SENSOR_PULSE_CODE -1  // QNX002: Negative pulse code collides with kernel-reserved pulses</pre></td>
           <td><em>Use positive pulse codes in the range _PULSE_CODE_MINAVAIL (0) to _PULSE_CODE_MAXAVAIL (127).</em></td>
@@ -75,7 +75,7 @@
         <tr class="medium">
           <td><strong>QNX003</strong></td>
           <td><span class="badge medium">MEDIUM</span></td>
-          <td><code>vulnerable_service.c:22</code></td>
+          <td><code>sample_qnx_project\vulnerable_service.c:22</code></td>
           <td>ChannelCreate() called with flags=0. Channel lacks priority inheritance or fixed-priority scheduling.</td>
           <td><pre>int chid = ChannelCreate(0);</pre></td>
           <td><em>Configure _NTO_CHF_FIXED_PRIORITY or priority inheritance flags on real-time service channels.</em></td>
@@ -84,7 +84,7 @@
         <tr class="low">
           <td><strong>QNX104</strong></td>
           <td><span class="badge low">LOW</span></td>
-          <td><code>vulnerable_system.bld:10</code></td>
+          <td><code>sample_qnx_project\vulnerable_system.bld:10</code></td>
           <td>LD_LIBRARY_PATH contains relative path or writable directory (/tmp, /var).</td>
           <td><pre>LD_LIBRARY_PATH=/tmp:/proc/boot</pre></td>
           <td><em>Restrict library search path exclusively to /proc/boot:/lib:/usr/lib.</em></td>
@@ -93,7 +93,7 @@
         <tr class="high">
           <td><strong>QNX105</strong></td>
           <td><span class="badge high">HIGH</span></td>
-          <td><code>vulnerable_system.bld:13</code></td>
+          <td><code>sample_qnx_project\vulnerable_system.bld:13</code></td>
           <td>Hardcoded sensitive credential identified in QNX buildfile.</td>
           <td><pre>DIAG_API_KEY=********</pre></td>
           <td><em>Inject credentials at runtime via encrypted filesystem or secure configuration daemon.</em></td>
@@ -102,7 +102,7 @@
         <tr class="high">
           <td><strong>QNX101</strong></td>
           <td><span class="badge high">HIGH</span></td>
-          <td><code>vulnerable_system.bld:22</code></td>
+          <td><code>sample_qnx_project\vulnerable_system.bld:22</code></td>
           <td>Insecure file permission mask '0777' allows world-write access in QNX image.</td>
           <td><pre>[perms=0777] /bin/telemetry_daemon = /target/telemetry_daemon</pre></td>
           <td><em>Change permission attribute to [perms=0755] for executables or [perms=0644] for read-only data.</em></td>
